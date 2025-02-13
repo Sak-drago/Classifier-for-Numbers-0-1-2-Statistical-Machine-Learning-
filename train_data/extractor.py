@@ -66,7 +66,11 @@ def show_images(images, title_texts):
 
 dataSetImages = []
 dataSetLabels = []
+testSetImages = []
+testSetLabels =[]
 flattenDataSetImages = []
+flattenTestSetImages = []
+
 countZero = 0
 countOne = 0
 countTwo = 0
@@ -99,5 +103,36 @@ for i in range(60000):
 show_images(dataSetImages, dataSetLabels)
 print(len(dataSetLabels))
 print(len(dataSetImages))
-print(len(flattenDataSetImages))
+
+countZero = 0
+countOne = 0
+countTwo = 0
+for i in range(15000):
+    if countZero == 100 and countOne == 100 and countTwo == 100:
+        break
+    r = random.randint(0, 10000)
+    if y_test[r] == 0 and countZero <100:
+        countZero+=1
+        testSetImages.append(x_test[r])
+        testSetLabels.append(y_test[r])
+        flattenImage = np.reshape(x_test[r], (784,)) / 255.0
+        flattenTestSetImages.append(flattenImage)
+
+    elif y_test[r] == 1 and countOne<100:
+        countOne+=1
+        testSetImages.append(x_test[r])
+        testSetLabels.append(y_test[r])
+        flattenImage = np.reshape(x_test[r], (784,)) / 255.0
+        flattenTestSetImages.append(flattenImage)
+
+    elif y_test[r] == 2 and countTwo<100:
+        countTwo+=1
+        testSetImages.append(x_test[r])
+        testSetLabels.append(y_test[r])
+        flattenImage = np.reshape(x_test[r], (784,)) / 255.0
+        flattenTestSetImages.append(flattenImage)
+
 np.savez('dataSet.npz', images=flattenDataSetImages, labels=dataSetLabels)
+np.savez('testSet.npz', images=flattenTestSetImages, labels=testSetLabels)
+print(len(testSetLabels))
+print(len(testSetImages))
