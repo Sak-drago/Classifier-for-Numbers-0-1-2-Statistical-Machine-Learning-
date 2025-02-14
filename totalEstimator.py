@@ -44,7 +44,6 @@ def calculateMeanAndCovariance(dataMatrix):
     centeredData = dataMatrix - meanVec
     covMatrix = np.dot(centeredData.T, centeredData) / (nSamples - 1)
     return meanVec, covMatrix
-
 # ============================
 # COMPLETE CLASSIFIERS (LDA & QDA)
 # ============================
@@ -191,6 +190,16 @@ accQdaPca = computeAccuracy(testLabels, qdaPcaPred)
 print(f"LDA after PCA Test Accuracy: {accLdaPca:.2f}%")
 print(f"QDA after PCA Test Accuracy: {accQdaPca:.2f}%")
 
+ldaPcaTrainPred = completeLinearDiscriminantAnalysis(trainingPca, labels, trainingPca, classes=[0,1,2])
+qdaPcaTrainPred = completeQuadraticDiscriminantAnalysis(trainingPca, labels, trainingPca, classes=[0,1,2])
+
+accLdaPcaTrain = computeAccuracy(labels, ldaPcaTrainPred)
+accQdaPcaTrain = computeAccuracy(labels, qdaPcaTrainPred)
+
+print(f"LDA on PCA Training Accuracy: {accLdaPcaTrain:.2f}%")
+print(f"QDA on PCA Training Accuracy: {accQdaPcaTrain:.2f}%")
+
+
 UniqueLabels = np.unique(labels)
 Colors = ['red', 'green', 'blue']
 plt.figure(figsize=(10, 8))
@@ -198,12 +207,50 @@ for i, label in enumerate(UniqueLabels):
     indices = np.where(labels == label)[0]
     plt.scatter(trainingPca[indices, 0], trainingPca[indices, 1],
                 color=Colors[i], label=f"Class {label}")
-plt.xlabel("FDA Component 1")
-plt.ylabel("FDA Component 2")
-plt.title("FDA Projection of Training Data")
+plt.xlabel("PCA Component 1")
+plt.ylabel("PCA Component 2")
+plt.title("PCA Projection of Training Data")
 plt.legend()
+plt.savefig('PCA_PLT.png')
 plt.show()
 
+
+pcaVar = 0.90
+trainingPca, UpPca, muPca = performPca(flattenImages, pcaVar)
+testPca = transformPca(testImages, UpPca, muPca) # Just to get the training set
+
+# Classify using LDA and QDA on PCA-transformed data
+ldaPcaPred = completeLinearDiscriminantAnalysis(trainingPca, labels, testPca, classes=[0,1,2])
+qdaPcaPred = completeQuadraticDiscriminantAnalysis(trainingPca, labels, testPca, classes=[0,1,2])
+
+accLdaPca = computeAccuracy(testLabels, ldaPcaPred)
+accQdaPca = computeAccuracy(testLabels, qdaPcaPred)
+
+print(f"LDA after PCA Test Accuracy for 90% Variance: {accLdaPca:.2f}%")
+print(f"QDA after PCA Test Accuracy 90% Variance: {accQdaPca:.2f}%")
+
+ldaPcaTrainPred = completeLinearDiscriminantAnalysis(trainingPca, labels, trainingPca, classes=[0,1,2])
+qdaPcaTrainPred = completeQuadraticDiscriminantAnalysis(trainingPca, labels, trainingPca, classes=[0,1,2])
+
+accLdaPcaTrain = computeAccuracy(labels, ldaPcaTrainPred)
+accQdaPcaTrain = computeAccuracy(labels, qdaPcaTrainPred)
+
+print(f"LDA on PCA Training Accuracy for 90% Variance: {accLdaPcaTrain:.2f}%")
+print(f"QDA on PCA Training Accuracy for 90% Variance: {accQdaPcaTrain:.2f}%")
+
+UniqueLabels = np.unique(labels)
+Colors = ['red', 'green', 'blue']
+plt.figure(figsize=(10, 8))
+for i, label in enumerate(UniqueLabels):
+    indices = np.where(labels == label)[0]
+    plt.scatter(trainingPca[indices, 0], trainingPca[indices, 1],
+                color=Colors[i], label=f"Class {label}")
+plt.xlabel("PCA Component 1")
+plt.ylabel("PCA Component 2")
+plt.title("PCA Projection of Training Data for 90% Variance")
+plt.legend()
+plt.savefig('PCA_PLT_90.png')
+plt.show()
 # ============================================================
 # 2) FDA + LDA / QDA CLASSIFICATION
 # ============================================================
@@ -222,9 +269,15 @@ accQdaFda = computeAccuracy(testLabels, qdaFdaPred)
 print(f"LDA after FDA Test Accuracy: {accLdaFda:.2f}%")
 print(f"QDA after FDA Test Accuracy: {accQdaFda:.2f}%")
 
-# ============================================================
-# 3) VISUALIZE FDA PROJECTION OF TRAINING DATA
-# ============================================================
+ldaFdaTrainPred = completeLinearDiscriminantAnalysis(trainingFda, labels, trainingFda, classes=[0,1,2])
+qdaFdaTrainPred = completeQuadraticDiscriminantAnalysis(trainingFda, labels, trainingFda, classes=[0,1,2])
+
+accLdaFdaTrain = computeAccuracy(labels, ldaFdaTrainPred)
+accQdaFdaTrain = computeAccuracy(labels, qdaFdaTrainPred)
+
+print(f"LDA on FDA Training Accuracy: {accLdaFdaTrain:.2f}%")
+print(f"QDA on FDA Training Accuracy: {accQdaFdaTrain:.2f}%")
+
 UniqueLabels = np.unique(labels)
 Colors = ['red', 'green', 'blue']
 plt.figure(figsize=(10, 8))
@@ -236,5 +289,6 @@ plt.xlabel("FDA Component 1")
 plt.ylabel("FDA Component 2")
 plt.title("FDA Projection of Training Data")
 plt.legend()
+plt.savefig('FDA_PLT.png')
 plt.show()
 
